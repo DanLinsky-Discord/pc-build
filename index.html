@@ -10,6 +10,7 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:#0f1117;font-family:system-ui,-apple-system,sans-serif;color:#e2e8f0;min-height:100vh}
+  a{color:#38bdf8;text-decoration:none}a:hover{text-decoration:underline}
   button{cursor:pointer}
 </style>
 </head>
@@ -19,86 +20,173 @@
 const { useState } = React;
 
 const fixedParts = [
-  { category: "GPU", name: "Nvidia RTX 5070 Ti", price: 749, note: "16GB GDDR7 · CUDA · 4K + AI workhorse · VRAM can't be upgraded later" },
-  { category: "Case", name: "Fractal Design North (Mesh, Black)", price: 109, note: "Clean furniture aesthetic · No RGB · Excellent airflow · Includes 2×140mm fans" },
-  { category: "CPU Cooler", name: "Thermalright Peerless Assassin 120", price: 35, note: "Dual-tower air · No RGB · Outperforms most AIOs · Fits North case easily" },
-  { category: "PSU", name: "Corsair RM750x 750W 80+ Gold", price: 109, note: "Fully modular · Dead silent under load · 10-yr warranty · 750W = ample headroom for 5070 Ti" },
+  {
+    category: "GPU", name: "Nvidia RTX 5070 Ti", msrp: 749, actual: 999,
+    note: "16GB GDDR7 · CUDA · Non-negotiable for VRAM",
+    alert: "⚠ $250 above MSRP right now. Best price: ~$950 at Walmart. Consider waiting.",
+    links: { "Walmart": "https://www.walmart.com/search?q=rtx+5070+ti", "Newegg": "https://www.newegg.com/p/pl?d=rtx+5070+ti", "Amazon": "https://www.amazon.com/s?k=rtx+5070+ti" }
+  },
+  {
+    category: "Case", name: "Fractal Design North (Mesh, Black)", msrp: 109, actual: 109,
+    note: "Clean walnut aesthetic · No RGB · 2×140mm fans included",
+    alert: null,
+    links: { "Amazon": "https://www.amazon.com/dp/B09V878FXQ", "Newegg": "https://www.newegg.com/p/N82E16811352203" }
+  },
+  {
+    category: "CPU Cooler", name: "Thermalright Peerless Assassin 120 SE", msrp: 35, actual: 35,
+    note: "Dual-tower · No RGB · Beats most AIOs",
+    alert: null,
+    links: { "Amazon": "https://www.amazon.com/s?k=thermalright+peerless+assassin+120+se", "Newegg": "https://www.newegg.com/p/0VE-01P6-00006" }
+  },
+  {
+    category: "PSU", name: "Corsair RM750x 750W Gold", msrp: 109, actual: 115,
+    note: "Fully modular · Dead silent · 10-yr warranty",
+    alert: null,
+    links: { "Amazon": "https://www.amazon.com/dp/B0DJ1M18CY", "Newegg": "https://www.newegg.com/p/N82E16817139335" }
+  },
 ];
 
 const options = {
   cpu: {
-    label: "CPU",
+    label: "CPU", key: "cpu",
     opts: [
-      { name: "Ryzen 5 9600X", price: 229, tag: "Recommended", tagColor: "#27ae60", desc: "GPU bottlenecks before this CPU at 4K. Fast, efficient, runs cool." },
-      { name: "Ryzen 7 9700X", price: 329, tag: "Balanced", tagColor: "#38bdf8", desc: "More cores help with multitasking & streaming alongside gaming." },
-      { name: "Ryzen 7 9800X3D", price: 479, tag: "Best gaming CPU", tagColor: "#f59e0b", desc: "Worth it if you also game at 1080p/1440p. Overkill for 4K-only." },
+      { name: "Ryzen 5 9600X", msrp: 229, actual: 184, tag: "Recommended · Price dropped!", tagColor: "#27ae60",
+        desc: "GPU bottlenecks first at 4K. Dropped to $184 — well below our original estimate.",
+        links: { "Amazon": "https://www.amazon.com/s?k=ryzen+5+9600x", "Newegg": "https://www.newegg.com/p/N82E16819113844" } },
+      { name: "Ryzen 7 9700X", msrp: 329, actual: 299, tag: "Balanced", tagColor: "#38bdf8",
+        desc: "More cores for multitasking & streaming. Modest 4K gaming gain.",
+        links: { "Amazon": "https://www.amazon.com/s?k=ryzen+7+9700x", "Newegg": "https://www.newegg.com/p/pl?d=ryzen+7+9700x" } },
+      { name: "Ryzen 7 9800X3D", msrp: 479, actual: 449, tag: "Best gaming CPU", tagColor: "#f59e0b",
+        desc: "Worth it if you also game at 1080p/1440p. Overkill for 4K-only.",
+        links: { "Amazon": "https://www.amazon.com/s?k=ryzen+7+9800x3d", "Newegg": "https://www.newegg.com/p/pl?d=ryzen+7+9800x3d" } },
     ]
   },
   mobo: {
-    label: "Motherboard",
+    label: "Motherboard", key: "mobo",
     opts: [
-      { name: "MSI MAG B650 Tomahawk WiFi", price: 169, tag: "Recommended", tagColor: "#27ae60", desc: "PCIe 5.0, DDR5, WiFi 6. Zero disadvantage vs B850 for this build." },
-      { name: "MSI MAG B850 Tomahawk MAX WiFi", price: 199, tag: "Future-proof", tagColor: "#38bdf8", desc: "Better upgrade path for next-gen CPUs. Worth $30 if you plan to keep the board long-term." },
-      { name: "ASUS ROG STRIX X870E-E WiFi", price: 349, tag: "Enthusiast", tagColor: "#e74c3c", desc: "USB4, 10G LAN, flagship VRMs. Overkill unless you have specific needs." },
+      { name: "MSI MAG B650 Tomahawk WiFi", msrp: 169, actual: 169, tag: "Recommended", tagColor: "#27ae60",
+        desc: "PCIe 5.0, DDR5, WiFi 6E. Zero real disadvantage vs B850 for this build.",
+        links: { "Amazon": "https://www.amazon.com/dp/B0BHCCNSRH", "Newegg": "https://www.newegg.com/p/N82E16813144557" } },
+      { name: "MSI MAG B850 Tomahawk MAX WiFi", msrp: 199, actual: 199, tag: "Future-proof", tagColor: "#38bdf8",
+        desc: "Better upgrade path. Worth $30 if keeping the board long-term.",
+        links: { "Amazon": "https://www.amazon.com/s?k=msi+mag+b850+tomahawk+max+wifi", "Newegg": "https://www.newegg.com/p/pl?d=b850+tomahawk+max" } },
+      { name: "ASUS ROG STRIX X870E-E WiFi", msrp: 349, actual: 349, tag: "Enthusiast", tagColor: "#e74c3c",
+        desc: "USB4, 10G LAN, flagship VRMs. Overkill unless you have specific needs.",
+        links: { "Amazon": "https://www.amazon.com/s?k=asus+rog+strix+x870e", "Newegg": "https://www.newegg.com/p/pl?d=rog+strix+x870e" } },
     ]
   },
   ram: {
-    label: "RAM",
+    label: "RAM", key: "ram",
     opts: [
-      { name: "32GB DDR5-6000 (2×16GB)", price: 110, tag: "Recommended", tagColor: "#27ae60", desc: "Covers 4K gaming + 7–14B AI models on-GPU. Easily expanded later (~$80)." },
-      { name: "48GB DDR5-6000 (2×24GB)", price: 155, tag: "Middle ground", tagColor: "#38bdf8", desc: "Helps with AI model overflow to system RAM. Verify kit compatibility before buying." },
-      { name: "64GB DDR5-6000 (2×32GB)", price: 189, tag: "AI-optimized", tagColor: "#8b5cf6", desc: "Best for running 30B+ models with layer offloading. Overkill if AI is secondary." },
+      { name: "32GB DDR5-6000 — G.Skill Flare X5", msrp: 110, actual: 105, tag: "Recommended", tagColor: "#27ae60",
+        desc: "Covers 4K gaming + 7–14B AI models. Expandable later for ~$80 more.",
+        links: { "Amazon": "https://www.amazon.com/s?k=g.skill+flare+x5+32gb+ddr5+6000", "Newegg": "https://www.newegg.com/p/pl?d=gskill+flare+x5+32gb+ddr5+6000" } },
+      { name: "48GB DDR5-6000 (2×24GB)", msrp: 155, actual: 150, tag: "Middle ground", tagColor: "#38bdf8",
+        desc: "Helps with AI model overflow to system RAM. Verify kit compatibility.",
+        links: { "Amazon": "https://www.amazon.com/s?k=48gb+ddr5+6000", "Newegg": "https://www.newegg.com/p/pl?d=48gb+ddr5+6000" } },
+      { name: "64GB DDR5-6000 — G.Skill Flare X5", msrp: 189, actual: 185, tag: "AI-optimized", tagColor: "#8b5cf6",
+        desc: "Best for 30B+ models with layer offloading. Overkill if AI is secondary.",
+        links: { "Amazon": "https://www.amazon.com/s?k=g.skill+flare+x5+64gb+ddr5+6000", "Newegg": "https://www.newegg.com/p/pl?d=gskill+flare+x5+64gb+ddr5" } },
     ]
   },
   storage: {
-    label: "Storage",
+    label: "Storage", key: "storage",
     opts: [
-      { name: "1TB NVMe Gen4 SSD", price: 65, tag: "Lean start", tagColor: "#27ae60", desc: "Add a 2nd M.2 anytime. Fine if you don't hoard games." },
-      { name: "2TB NVMe Gen4 SSD", price: 120, tag: "Recommended", tagColor: "#38bdf8", desc: "Room for several big games + multiple AI models (14B ≈ 8GB each)." },
-      { name: "4TB NVMe Gen4 SSD", price: 219, tag: "Set and forget", tagColor: "#f59e0b", desc: "Never think about storage again. Worth it with a large game/model library." },
+      { name: "1TB — WD Black SN850X", msrp: 65, actual: 60, tag: "Lean start", tagColor: "#27ae60",
+        desc: "Add a 2nd M.2 anytime. Fine if you don't hoard games.",
+        links: { "Amazon": "https://www.amazon.com/s?k=wd+black+sn850x+1tb", "Newegg": "https://www.newegg.com/p/pl?d=wd+black+sn850x+1tb" } },
+      { name: "2TB — WD Black SN850X", msrp: 120, actual: 110, tag: "Recommended", tagColor: "#38bdf8",
+        desc: "Room for big games + multiple AI models (14B ≈ 8GB each).",
+        links: { "Amazon": "https://www.amazon.com/s?k=wd+black+sn850x+2tb", "Newegg": "https://www.newegg.com/p/pl?d=wd+black+sn850x+2tb" } },
+      { name: "4TB — WD Black SN850X", msrp: 219, actual: 200, tag: "Set and forget", tagColor: "#f59e0b",
+        desc: "Never think about storage again. Worth it with a large game/model library.",
+        links: { "Amazon": "https://www.amazon.com/s?k=wd+black+sn850x+4tb", "Newegg": "https://www.newegg.com/p/pl?d=wd+black+sn850x+4tb" } },
     ]
   },
   fans: {
-    label: "Extra Fans",
+    label: "Extra Fans", key: "fans",
     opts: [
-      { name: "None — use case stock fans", price: 0, tag: "Minimum", tagColor: "#475569", desc: "Fractal North includes 2×140mm. Adequate for modest loads, but lean for sustained GPU workloads like AI inference." },
-      { name: "3× Arctic P12 PWM (120mm)", price: 22, tag: "Recommended", tagColor: "#27ae60", desc: "Best value fans on the market. Add 2 front intakes + 1 top exhaust. No RGB. Quiet, strong static pressure." },
-      { name: "3× be quiet! Pure Wings 3 (120mm)", price: 38, tag: "Premium quiet", tagColor: "#38bdf8", desc: "Whisper silent even at full speed. Worth it if low noise is a priority." },
+      { name: "None — use case stock fans", msrp: 0, actual: 0, tag: "Minimum", tagColor: "#475569",
+        desc: "Fractal North includes 2×140mm. Lean for sustained AI inference workloads.",
+        links: {} },
+      { name: "3× Arctic P12 PWM (120mm)", msrp: 22, actual: 20, tag: "Recommended", tagColor: "#27ae60",
+        desc: "Best value fans. 2 front intakes + 1 top exhaust. No RGB, quiet.",
+        links: { "Amazon": "https://www.amazon.com/s?k=arctic+p12+pwm+3+pack", "Newegg": "https://www.newegg.com/p/pl?d=arctic+p12+pwm+3+pack" } },
+      { name: "3× be quiet! Pure Wings 3 (120mm)", msrp: 38, actual: 36, tag: "Premium quiet", tagColor: "#38bdf8",
+        desc: "Whisper silent. Worth it if low noise is a priority.",
+        links: { "Amazon": "https://www.amazon.com/s?k=be+quiet+pure+wings+3+120mm+3+pack", "Newegg": "https://www.newegg.com/p/pl?d=be+quiet+pure+wings+3" } },
     ]
   },
 };
 
-const fixedTotal = fixedParts.reduce((s, p) => s + p.price, 0);
+const fixedActual = fixedParts.reduce((s, p) => s + p.actual, 0);
 const TARGET = 1500;
 
 const tagStyle = (color) => ({
   fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
-  background: color + "22", color, border: `1px solid ${color}44`, whiteSpace: "nowrap"
+  background: color + "22", color, border: `1px solid ${color}44`, whiteSpace: "nowrap", flexShrink: 0
 });
+
+function Links({ links }) {
+  const entries = Object.entries(links);
+  if (!entries.length) return null;
+  return (
+    <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+      {entries.map(([label, url]) => (
+        <a key={label} href={url} target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: 12, padding: "3px 10px", borderRadius: 6, background: "#0f1117", border: "1px solid #38bdf830", color: "#38bdf8" }}
+          onClick={e => e.stopPropagation()}>
+          {label} ↗
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function PricePill({ msrp, actual }) {
+  const over = actual > msrp;
+  const under = actual < msrp;
+  return (
+    <div style={{ textAlign: "right", flexShrink: 0 }}>
+      <div style={{ fontWeight: 700, color: over ? "#e74c3c" : "#38bdf8", fontSize: 15 }}>${actual}</div>
+      {over && <div style={{ fontSize: 10, color: "#e74c3c" }}>MSRP ${msrp} ↑</div>}
+      {under && <div style={{ fontSize: 10, color: "#27ae60" }}>MSRP ${msrp} ↓</div>}
+    </div>
+  );
+}
 
 function App() {
   const [sel, setSel] = useState({ cpu: 0, mobo: 0, ram: 0, storage: 1, fans: 1 });
+  const [expandFixed, setExpandFixed] = useState(true);
 
-  const varTotal = Object.entries(sel).reduce((s, [k, i]) => s + options[k].opts[i].price, 0);
-  const total = fixedTotal + varTotal;
+  const varActual = Object.entries(sel).reduce((s, [k, i]) => s + options[k].opts[i].actual, 0);
+  const total = fixedActual + varActual;
   const diff = total - TARGET;
-  const barPct = Math.min((total / (TARGET + 500)) * 100, 100);
-  const barColor = total <= TARGET ? "#a3e635" : total <= TARGET + 150 ? "#f59e0b" : "#e74c3c";
+  const barPct = Math.min((total / (TARGET + 600)) * 100, 100);
+  const barColor = total <= TARGET ? "#a3e635" : total <= TARGET + 200 ? "#f59e0b" : "#e74c3c";
+
+  const gpuAlert = fixedParts.find(p => p.category === "GPU");
 
   return (
     <div style={{ maxWidth: 740, margin: "0 auto", padding: 24 }}>
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>Full Build Configurator · 4K Gaming + Local AI</div>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f1f5f9", marginBottom: 6 }}>Every Part. Every Decision.</h1>
-        <p style={{ color: "#94a3b8", fontSize: 14 }}>Fixed parts shown below. Toggle options to see real-time price impact.</p>
+        <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>Build Configurator · 4K Gaming + Local AI · Prices as of Feb 2026</div>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f1f5f9", marginBottom: 6 }}>Every Part. Real Prices.</h1>
+        <p style={{ color: "#94a3b8", fontSize: 14 }}>Current market prices shown. Click any retailer link to buy.</p>
+      </div>
+
+      {/* GPU Alert Banner */}
+      <div style={{ background: "#1a0f0f", border: "1px solid #e74c3c44", borderRadius: 10, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#f87171", lineHeight: 1.6 }}>
+        <strong style={{ color: "#e74c3c" }}>⚠ RTX 5070 Ti Pricing Alert:</strong> Currently ~$999 across all major retailers — $250 above its $749 MSRP. Best available price is ~$950 at Walmart. Prices are trending down from a $1,220 peak in May 2025. Consider waiting or setting a price alert on pcpartpicker.com.
       </div>
 
       {/* Price tracker */}
-      <div style={{ background: "#1e2533", borderRadius: 12, padding: "18px 20px", marginBottom: 24 }}>
+      <div style={{ background: "#1e2533", borderRadius: 12, padding: "18px 20px", marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
           <div>
-            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>TOTAL ESTIMATED COST</div>
+            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>CURRENT MARKET TOTAL</div>
             <div style={{ fontSize: 40, fontWeight: 800, color: barColor, lineHeight: 1 }}>${total.toLocaleString()}</div>
+            <div style={{ fontSize: 12, color: "#475569", marginTop: 4 }}>Would be ${(fixedParts.reduce((s,p)=>s+p.msrp,0) + Object.entries(sel).reduce((s,[k,i])=>s+options[k].opts[i].msrp,0)).toLocaleString()} at full MSRP</div>
           </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 12, color: "#64748b", marginBottom: 4 }}>vs. $1,500 target</div>
@@ -109,36 +197,50 @@ function App() {
         </div>
         <div style={{ background: "#0f1117", borderRadius: 999, height: 8, position: "relative" }}>
           <div style={{ height: "100%", borderRadius: 999, transition: "width 0.3s, background 0.3s", width: `${barPct}%`, background: barColor }} />
-          <div style={{ position: "absolute", top: -4, left: `${(TARGET / (TARGET + 500)) * 100}%`, width: 2, height: 16, background: "#a3e635", borderRadius: 2 }} />
+          <div style={{ position: "absolute", top: -4, left: `${(TARGET / (TARGET + 600)) * 100}%`, width: 2, height: 16, background: "#a3e635", borderRadius: 2 }} />
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 11, color: "#475569" }}>
-          <span>$0</span><span style={{ color: "#a3e635", fontWeight: 600 }}>$1,500 target</span><span>$2,000+</span>
+          <span>$0</span><span style={{ color: "#a3e635", fontWeight: 600 }}>$1,500 target</span><span>$2,100+</span>
         </div>
       </div>
 
       {/* Fixed Parts */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 10 }}>
-          Fixed Components — ${fixedTotal} <span style={{ color: "#475569", fontSize: 10 }}>(not configurable)</span>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", marginBottom: 10 }}
+          onClick={() => setExpandFixed(v => !v)}>
+          <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase" }}>
+            Fixed Components — ${fixedActual} actual
+          </div>
+          <div style={{ fontSize: 12, color: "#475569" }}>{expandFixed ? "▲ hide" : "▼ show"}</div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          {fixedParts.map((p, i) => (
-            <div key={i} style={{ background: "#161b27", border: "1px solid #1e2533", borderRadius: 10, padding: "12px 14px" }}>
-              <div style={{ fontSize: 10, color: "#475569", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{p.category}</div>
-              <div style={{ fontWeight: 600, fontSize: 13, color: "#94a3b8", marginBottom: 4 }}>{p.name}</div>
-              <div style={{ fontSize: 11, color: "#475569", lineHeight: 1.5, marginBottom: 8 }}>{p.note}</div>
-              <div style={{ fontWeight: 700, color: "#475569", fontSize: 14 }}>${p.price}</div>
-            </div>
-          ))}
-        </div>
+        {expandFixed && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {fixedParts.map((p, i) => (
+              <div key={i} style={{ background: "#161b27", border: `1px solid ${p.alert ? "#e74c3c44" : "#1e2533"}`, borderRadius: 10, padding: "12px 14px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, color: "#475569", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>{p.category}</div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#94a3b8", marginBottom: 4 }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: "#475569", lineHeight: 1.5 }}>{p.note}</div>
+                    {p.alert && <div style={{ fontSize: 11, color: "#f87171", marginTop: 6, lineHeight: 1.5 }}>{p.alert}</div>}
+                    <Links links={p.links} />
+                  </div>
+                  <div style={{ marginLeft: 16 }}>
+                    <PricePill msrp={p.msrp} actual={p.actual} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Configurable Parts */}
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 16 }}>
-          Configurable Components — ${varTotal}
+          Configurable Components — ${varActual} actual
         </div>
-        {Object.entries(options).map(([key, { label, opts }]) => (
+        {Object.values(options).map(({ label, key, opts }) => (
           <div key={key} style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>{label}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -151,7 +253,7 @@ function App() {
                     borderRadius: 10, padding: "11px 14px", cursor: "pointer", transition: "all 0.15s"
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", flex: 1 }}>
                         <div style={{
                           width: 16, height: 16, borderRadius: "50%", flexShrink: 0,
                           border: `2px solid ${active ? "#a3e635" : "#475569"}`,
@@ -163,13 +265,14 @@ function App() {
                         <span style={{ fontWeight: 600, fontSize: 13, color: active ? "#f1f5f9" : "#94a3b8" }}>{opt.name}</span>
                         <span style={tagStyle(opt.tagColor)}>{opt.tag}</span>
                       </div>
-                      <span style={{ fontWeight: 700, color: active ? "#a3e635" : "#38bdf8", fontSize: 14, flexShrink: 0, marginLeft: 8 }}>
-                        {opt.price === 0 ? "Included" : `$${opt.price}`}
-                      </span>
+                      <div style={{ marginLeft: 12 }}>
+                        <PricePill msrp={opt.msrp} actual={opt.actual} />
+                      </div>
                     </div>
                     {active && (
-                      <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #1e3a1e", fontSize: 12, color: "#6b7280", lineHeight: 1.6 }}>
-                        {opt.desc}
+                      <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #1e3a1e" }}>
+                        <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6, marginBottom: 4 }}>{opt.desc}</div>
+                        <Links links={opt.links} />
                       </div>
                     )}
                   </div>
@@ -182,28 +285,29 @@ function App() {
 
       {/* Summary */}
       <div style={{ background: "#1e2533", borderRadius: 12, padding: "18px 20px", marginTop: 8 }}>
-        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 12, fontWeight: 600 }}>FULL BUILD SUMMARY</div>
+        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 12, fontWeight: 600 }}>FULL BUILD SUMMARY — CURRENT PRICES</div>
         {fixedParts.map((p, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
             <span style={{ color: "#475569" }}>{p.category}</span>
-            <span style={{ color: "#64748b" }}>${p.price}</span>
+            <span style={{ color: p.actual > p.msrp ? "#f87171" : "#64748b" }}>${p.actual}{p.actual > p.msrp ? " ⚠" : ""}</span>
           </div>
         ))}
         <div style={{ borderTop: "1px solid #2d3748", margin: "8px 0" }} />
-        {Object.entries(options).map(([key, { label, opts }]) => (
+        {Object.values(options).map(({ label, key, opts }) => (
           <div key={key} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
             <span style={{ color: "#94a3b8" }}>{label}</span>
             <span style={{ color: "#f1f5f9" }}>
-              {opts[sel[key]].name.split("(")[0].trim()}
-              <span style={{ color: "#38bdf8", marginLeft: 8 }}>
-                {opts[sel[key]].price === 0 ? "included" : `$${opts[sel[key]].price}`}
-              </span>
+              {opts[sel[key]].name.split("—")[0].trim().split("(")[0].trim()}
+              <span style={{ color: "#38bdf8", marginLeft: 8 }}>${opts[sel[key]].actual}</span>
             </span>
           </div>
         ))}
         <div style={{ borderTop: "1px solid #2d3748", paddingTop: 12, marginTop: 6, display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: 18 }}>
-          <span style={{ color: "#94a3b8" }}>Total</span>
+          <span style={{ color: "#94a3b8" }}>Total (today)</span>
           <span style={{ color: barColor }}>${total.toLocaleString()}</span>
+        </div>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#475569", textAlign: "right" }}>
+          Prices last checked Feb 27, 2026 · <a href="https://pcpartpicker.com" target="_blank" rel="noopener noreferrer">Set alerts on PCPartPicker ↗</a>
         </div>
       </div>
     </div>
