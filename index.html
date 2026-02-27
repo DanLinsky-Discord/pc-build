@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"/&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</p>
+<p class="p1">&lt;title&gt;4K + AI Build Configurator&lt;/title&gt;</p>
+<p class="p1">&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>*{box-sizing:border-box;margin:0;padding:0}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>body{background:#0f1117;font-family:system-ui,-apple-system,sans-serif;color:#e2e8f0;min-height:100vh}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>button{cursor:pointer}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;div id="root"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;script type="text/babel"&gt;</p>
+<p class="p1">const { useState } = React;</p>
+<p class="p2"><br></p>
+<p class="p1">const fixedParts = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ category: "GPU", name: "Nvidia RTX 5070 Ti", price: 749, note: "16GB GDDR7 · CUDA · 4K + AI workhorse · VRAM can't be upgraded later" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ category: "Case", name: "Fractal Design North (Mesh, Black)", price: 109, note: "Clean furniture aesthetic · No RGB · Excellent airflow · Includes 2×140mm fans" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ category: "CPU Cooler", name: "Thermalright Peerless Assassin 120", price: 35, note: "Dual-tower air · No RGB · Outperforms most AIOs · Fits North case easily" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ category: "PSU", name: "Corsair RM750x 750W 80+ Gold", price: 109, note: "Fully modular · Dead silent under load · 10-yr warranty · 750W = ample headroom for 5070 Ti" },</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">const options = {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cpu: {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label: "CPU",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>opts: [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "Ryzen 5 9600X", price: 229, tag: "Recommended", tagColor: "#27ae60", desc: "GPU bottlenecks before this CPU at 4K. Fast, efficient, runs cool." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "Ryzen 7 9700X", price: 329, tag: "Balanced", tagColor: "#38bdf8", desc: "More cores help with multitasking &amp; streaming alongside gaming." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "Ryzen 7 9800X3D", price: 479, tag: "Best gaming CPU", tagColor: "#f59e0b", desc: "Worth it if you also game at 1080p/1440p. Overkill for 4K-only." },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>]</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>mobo: {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label: "Motherboard",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>opts: [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "MSI MAG B650 Tomahawk WiFi", price: 169, tag: "Recommended", tagColor: "#27ae60", desc: "PCIe 5.0, DDR5, WiFi 6. Zero disadvantage vs B850 for this build." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "MSI MAG B850 Tomahawk MAX WiFi", price: 199, tag: "Future-proof", tagColor: "#38bdf8", desc: "Better upgrade path for next-gen CPUs. Worth $30 if you plan to keep the board long-term." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "ASUS ROG STRIX X870E-E WiFi", price: 349, tag: "Enthusiast", tagColor: "#e74c3c", desc: "USB4, 10G LAN, flagship VRMs. Overkill unless you have specific needs." },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>]</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>ram: {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label: "RAM",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>opts: [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "32GB DDR5-6000 (2×16GB)", price: 110, tag: "Recommended", tagColor: "#27ae60", desc: "Covers 4K gaming + 7–14B AI models on-GPU. Easily expanded later (~$80)." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "48GB DDR5-6000 (2×24GB)", price: 155, tag: "Middle ground", tagColor: "#38bdf8", desc: "Helps with AI model overflow to system RAM. Verify kit compatibility before buying." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "64GB DDR5-6000 (2×32GB)", price: 189, tag: "AI-optimized", tagColor: "#8b5cf6", desc: "Best for running 30B+ models with layer offloading. Overkill if AI is secondary." },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>]</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>storage: {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label: "Storage",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>opts: [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "1TB NVMe Gen4 SSD", price: 65, tag: "Lean start", tagColor: "#27ae60", desc: "Add a 2nd M.2 anytime. Fine if you don't hoard games." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "2TB NVMe Gen4 SSD", price: 120, tag: "Recommended", tagColor: "#38bdf8", desc: "Room for several big games + multiple AI models (14B ≈ 8GB each)." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "4TB NVMe Gen4 SSD", price: 219, tag: "Set and forget", tagColor: "#f59e0b", desc: "Never think about storage again. Worth it with a large game/model library." },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>]</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>fans: {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label: "Extra Fans",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>opts: [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "None — use case stock fans", price: 0, tag: "Minimum", tagColor: "#475569", desc: "Fractal North includes 2×140mm. Adequate for modest loads, but lean for sustained GPU workloads like AI inference." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "3× Arctic P12 PWM (120mm)", price: 22, tag: "Recommended", tagColor: "#27ae60", desc: "Best value fans on the market. Add 2 front intakes + 1 top exhaust. No RGB. Quiet, strong static pressure." },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ name: "3× be quiet! Pure Wings 3 (120mm)", price: 38, tag: "Premium quiet", tagColor: "#38bdf8", desc: "Whisper silent even at full speed. Worth it if low noise is a priority." },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>]</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">const fixedTotal = fixedParts.reduce((s, p) =&gt; s + p.price, 0);</p>
+<p class="p1">const TARGET = 1500;</p>
+<p class="p2"><br></p>
+<p class="p1">const tagStyle = (color) =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">  </span>fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background: color + "22", color, border: `1px solid ${color}44`, whiteSpace: "nowrap"</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">function App() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [sel, setSel] = useState({ cpu: 0, mobo: 0, ram: 0, storage: 1, fans: 1 });</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const varTotal = Object.entries(sel).reduce((s, [k, i]) =&gt; s + options[k].opts[i].price, 0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = fixedTotal + varTotal;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const diff = total - TARGET;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const barPct = Math.min((total / (TARGET + 500)) * 100, 100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const barColor = total &lt;= TARGET ? "#a3e635" : total &lt;= TARGET + 150 ? "#f59e0b" : "#e74c3c";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={{ maxWidth: 740, margin: "0 auto", padding: 24 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ marginBottom: 20 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}&gt;Full Build Configurator · 4K Gaming + Local AI&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 style={{ fontSize: 24, fontWeight: 700, color: "#f1f5f9", marginBottom: 6 }}&gt;Every Part. Every Decision.&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style={{ color: "#94a3b8", fontSize: 14 }}&gt;Fixed parts shown below. Toggle options to see real-time price impact.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* Price tracker */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ background: "#1e2533", borderRadius: 12, padding: "18px 20px", marginBottom: 24 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}&gt;TOTAL ESTIMATED COST&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize: 40, fontWeight: 800, color: barColor, lineHeight: 1 }}&gt;${total.toLocaleString()}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ textAlign: "right" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize: 12, color: "#64748b", marginBottom: 4 }}&gt;vs. $1,500 target&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize: 20, fontWeight: 700, color: diff &lt;= 0 ? "#a3e635" : "#f59e0b" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{diff &lt;= 0 ? `✓ $${Math.abs(diff)} under` : `$${diff} over`}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ background: "#0f1117", borderRadius: 999, height: 8, position: "relative" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ height: "100%", borderRadius: 999, transition: "width 0.3s, background 0.3s", width: `${barPct}%`, background: barColor }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{ position: "absolute", top: -4, left: `${(TARGET / (TARGET + 500)) * 100}%`, width: 2, height: 16, background: "#a3e635", borderRadius: 2 }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 11, color: "#475569" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span&gt;$0&lt;/span&gt;&lt;span style={{ color: "#a3e635", fontWeight: 600 }}&gt;$1,500 target&lt;/span&gt;&lt;span&gt;$2,000+&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* Fixed Parts */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ marginBottom: 28 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 10 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>Fixed Components — ${fixedTotal} &lt;span style={{ color: "#475569", fontSize: 10 }}&gt;(not configurable)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{fixedParts.map((p, i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div key={i} style={{ background: "#161b27", border: "1px solid #1e2533", borderRadius: 10, padding: "12px 14px" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{ fontSize: 10, color: "#475569", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}&gt;{p.category}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{ fontWeight: 600, fontSize: 13, color: "#94a3b8", marginBottom: 4 }}&gt;{p.name}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{ fontSize: 11, color: "#475569", lineHeight: 1.5, marginBottom: 8 }}&gt;{p.note}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{ fontWeight: 700, color: "#475569", fontSize: 14 }}&gt;${p.price}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* Configurable Parts */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ marginBottom: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 16 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>Configurable Components — ${varTotal}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{Object.entries(options).map(([key, { label, opts }]) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div key={key} style={{ marginBottom: 20 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}&gt;{label}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{ display: "flex", flexDirection: "column", gap: 6 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{opts.map((opt, i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const active = sel[key] === i;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div key={i} onClick={() =&gt; setSel(s =&gt; ({ ...s, [key]: i }))} style={{</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>background: active ? "#141f14" : "#161b27",</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>border: `2px solid ${active ? "#a3e635" : "#1e2533"}`,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>borderRadius: 10, padding: "11px 14px", cursor: "pointer", transition: "all 0.15s"</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>}}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div style={{</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>width: 16, height: 16, borderRadius: "50%", flexShrink: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>border: `2px solid ${active ? "#a3e635" : "#475569"}`,</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>background: active ? "#a3e635" : "transparent",</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>display: "flex", alignItems: "center", justifyContent: "center"</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>{active &amp;&amp; &lt;div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0f1117" }} /&gt;}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span style={{ fontWeight: 600, fontSize: 13, color: active ? "#f1f5f9" : "#94a3b8" }}&gt;{opt.name}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span style={tagStyle(opt.tagColor)}&gt;{opt.tag}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;span style={{ fontWeight: 700, color: active ? "#a3e635" : "#38bdf8", fontSize: 14, flexShrink: 0, marginLeft: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>{opt.price === 0 ? "Included" : `$${opt.price}`}</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{active &amp;&amp; (</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid #1e3a1e", fontSize: 12, color: "#6b7280", lineHeight: 1.6 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>{opt.desc}</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>);</p>
+<p class="p1"><span class="Apple-converted-space">              </span>})}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>{/* Summary */}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{ background: "#1e2533", borderRadius: 12, padding: "18px 20px", marginTop: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ fontSize: 12, color: "#64748b", marginBottom: 12, fontWeight: 600 }}&gt;FULL BUILD SUMMARY&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{fixedParts.map((p, i) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ color: "#475569" }}&gt;{p.category}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ color: "#64748b" }}&gt;${p.price}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ borderTop: "1px solid #2d3748", margin: "8px 0" }} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{Object.entries(options).map(([key, { label, opts }]) =&gt; (</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div key={key} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ color: "#94a3b8" }}&gt;{label}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{ color: "#f1f5f9" }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>{opts[sel[key]].name.split("(")[0].trim()}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;span style={{ color: "#38bdf8", marginLeft: 8 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{opts[sel[key]].price === 0 ? "included" : `$${opts[sel[key]].price}`}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{ borderTop: "1px solid #2d3748", paddingTop: 12, marginTop: 6, display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: 18 }}&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span style={{ color: "#94a3b8" }}&gt;Total&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span style={{ color: barColor }}&gt;${total.toLocaleString()}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">ReactDOM.createRoot(document.getElementById("root")).render(&lt;App /&gt;);</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
